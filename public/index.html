@@ -1,7 +1,138 @@
-<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Briefing Hub</title><style>body{font-family:ui-sans-serif,system-ui;background:#faf8f5;color:#1f1f1f;margin:0}.wrap{max-width:1000px;margin:0 auto;padding:24px} .card{background:#fff;border:1px solid #e8e1d8;border-radius:12px;padding:14px;margin:10px 0} a{color:#1d4ed8;text-decoration:none} a:hover{text-decoration:underline} .prompt{color:#5f564c}</style></head><body><main class='wrap'><h1>Briefing Hub</h1><p>All briefing links + original one-sentence prompt for each.</p>
-<div class='card'><h3><a target='_blank' href='https://code-rl-briefing.founders-0e1.workers.dev'>Code RL Briefing</a></h3><div class='prompt'>Original prompt: “What is the latest in code RL environments and human data?”</div></div>
-<div class='card'><h3><a target='_blank' href='https://synthetic-bio-briefing.founders-0e1.workers.dev'>Synthetic Biology Briefing</a></h3><div class='prompt'>Original prompt: “what is happening in the diverse intelligence and emergence engineering space of synthetic biology?”</div></div>
-<div class='card'><h3><a target='_blank' href='https://movie-social-briefing.founders-0e1.workers.dev'>Movies Social Briefing</a></h3><div class='prompt'>Original prompt: “What are the most talked about movies on social media”</div></div>
-<div class='card'><h3><a target='_blank' href='https://openclaw-ecosystem-briefing.founders-0e1.workers.dev'>OpenClaw Ecosystem Briefing</a></h3><div class='prompt'>Original prompt: “What interesting or genuinely useful/sophisticated things are people doing with clawdbot/moltbot/openclaw bots?”</div></div>
-<div class='card'><h3><a target='_blank' href='https://twitter-briefing.founders-0e1.workers.dev'>Twitter Daily Briefing</a></h3><div class='prompt'>Original prompt: “Send me my daily twitter briefing of 3 new accounts and 10 tweets to respond to.”</div></div>
-</main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Briefing Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f2ede4;--ink:#171612;--muted:#645c50;--line:#d5ccbd;--paper:#fffdf9;--accent:#1d4ed8;--accent2:#0f766e}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Manrope,system-ui;background:radial-gradient(circle at 18% 12%,#fff 0%,var(--bg) 44%,#eae3d8 100%);color:var(--ink)}
+    .wrap{max-width:1200px;margin:0 auto;padding:28px 18px 60px}
+    h1{font-family:'Instrument Serif',serif;font-size:3rem;line-height:1.02;margin:0 0 10px}
+    .sub{color:var(--muted);max-width:880px}
+    .layout{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:16px}
+    .panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px}
+    .hero{padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+    .title{font-weight:700}
+    .prompt{font-size:.92rem;color:#3b352d;line-height:1.4}
+    .meta{font-size:.84rem;color:var(--muted)}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    button,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:8px 11px;font:inherit;cursor:pointer}
+    .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn-primary:hover{filter:brightness(.95)}
+    .btn-secondary{background:#f7f3ec}
+    details{width:100%}
+    summary{cursor:pointer;color:var(--accent2);font-weight:600}
+    pre{white-space:pre-wrap;background:#f8f3ea;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.78rem;line-height:1.35;max-height:220px;overflow:auto}
+    textarea,input,select{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px;font:inherit}
+    textarea{min-height:112px;resize:vertical}
+    .status{font-size:.9rem;color:var(--muted)}
+    .hub-link{color:var(--accent)}
+    @media(max-width:980px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="panel hero">
+      <h1>Briefing Hub</h1>
+      <p class="sub">Launch daily runs from one place. Every briefing has a one-click trigger and an info panel showing the exact prompt payload sent into Slack/OpenClaw.</p>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <h2 style="margin-top:0">Run existing briefings</h2>
+        <div class="grid" id="cards"></div>
+      </section>
+
+      <section class="panel">
+        <h2 style="margin-top:0">Create new briefing from paste</h2>
+        <p class="meta">Paste a one- or two-sentence topic brief. This will generate and send the full daily template prompt.</p>
+        <label class="meta" for="newTopic">Topic prompt</label>
+        <textarea id="newTopic" placeholder="Example: What is happening in programmable cell therapies + AI-native wet lab automation?"></textarea>
+        <div class="row" style="margin-top:10px">
+          <label class="meta" for="windowSel">Time window</label>
+          <select id="windowSel" style="max-width:220px">
+            <option value="last 24 hours">last 24 hours</option>
+            <option value="last 7 days">last 7 days</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button id="runNew" class="btn btn-primary">Send new briefing prompt</button>
+          <span id="newStatus" class="status"></span>
+        </div>
+        <details style="margin-top:10px">
+          <summary>ℹ prompt preview</summary>
+          <pre id="newPromptPreview"></pre>
+        </details>
+      </section>
+    </div>
+  </main>
+
+<script>
+const BRIEFINGS = [
+  { name:'Code RL Briefing', url:'https://code-rl-briefing.founders-0e1.workers.dev', topic:'What is the latest in code RL environments and human data?' },
+  { name:'Synthetic Biology Briefing', url:'https://synthetic-bio-briefing.founders-0e1.workers.dev', topic:'what is happening in the diverse intelligence and emergence engineering space of synthetic biology?' },
+  { name:'Movies Social Briefing', url:'https://movie-social-briefing.founders-0e1.workers.dev', topic:'What are the most talked about movies on social media?' },
+  { name:'OpenClaw Ecosystem Briefing', url:'https://openclaw-ecosystem-briefing.founders-0e1.workers.dev', topic:'What interesting or genuinely useful/sophisticated things are people doing with clawdbot/moltbot/openclaw bots?' }
+];
+
+function buildPrompt(topic, windowSel='last 24 hours') {
+  const d = new Date().toISOString().slice(0,10);
+  return `You are producing a daily intelligence briefing for me.\n\nObjective\n\nCreate today’s briefing for this topic:\n\n${topic}\n\nDate of briefing: ${d}\nTime window: ${windowSel}\n\nData Collection Workflow\n\n1) Browser Use + SuperGrok on X\n\nUse Browser Use with my saved profile/session and run SuperGrok research on X for the topic above.\n\nCollect:\n- High-signal tweets/posts with direct status URLs\n- People/accounts driving the conversation\n- Verbatim tweet text from each selected post\n\nOutput target:\n- 10 high-signal tweet links minimum\n- 5 high-signal people/accounts minimum\n\n2) alphaXiv / arXiv pass\n\nSearch alphaXiv and arXiv for relevant papers in the same topic window.\n\nCollect:\n- Paper title\n- 1 sentence abstract-level insight per paper\n- Direct alphaXiv and/or arXiv links\n- People discussing those papers on X (when available)\n\nOutput target:\n- 5 relevant papers minimum\n\n3) Signals extraction\n\nBuild a global Signals set where each signal is a person:\n- Twitter account(s)\n- Researcher/author(s)\n\nEach signal includes:\n- Name\n- Role/type (account, researcher, author)\n- Multiple links when available (X, website, scholar, lab page, paper links)\n\nBriefing Format (Email Style)\n\nWrite the briefing as if it is the final email body.\n\nStructure:\n1. One-sentence take\n- Exactly one strong summary sentence.\n\n2. Tweets\n- Each bullet is:\n- 1 sentence from the tweet (verbatim or tightly extracted from tweet text)\n- → [label](direct status URL)\n\n3. Papers\n- Each bullet is:\n- 1 sentence from paper abstract/summary\n- → [paper title](alphaXiv or arXiv URL)\n\nStyle:\n- Crisp, direct, high-signal\n- One sentence per source item (max two if truly needed)\n- Link labels should be human-readable\n\nPublishing + Site Rules\n\nUpdate the briefing site so it supports daily operation:\n1. Date-based runs\n- Use date labels (YYYY-MM-DD), not v1/v2 naming.\n- Newest run appears first.\n\n2. Global views\n- View A: dated briefing runs (email-format body)\n- View B: global Signals index (people with links)\n\n3. Original prompt section\n- Include the exact original one-sentence user prompt for that run.\n\n4. Deployment\n- Deploy to Cloudflare Worker\n- Commit and push changes\n- Return live URL + commit hash\n\nDeliverables\n\nReturn:\n1. Final email-formatted briefing text\n2. Signals list (structured)\n3. Deployed page URL\n4. Repo URL\n5. Commit hash`;
+}
+
+async function sendPrompt(prompt, statusEl) {
+  statusEl.textContent = 'sending...';
+  const r = await fetch('/api/run', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ prompt }) });
+  const j = await r.json().catch(()=>({}));
+  statusEl.textContent = j.ok ? 'sent to Slack trigger' : `failed (${j.error || r.status})`;
+}
+
+const cards = document.getElementById('cards');
+cards.innerHTML = BRIEFINGS.map((b, i) => `
+  <article class="card">
+    <div class="title"><a class="hub-link" target="_blank" href="${b.url}">${b.name}</a></div>
+    <div class="prompt">Original topic: ${b.topic}</div>
+    <div class="row">
+      <button class="btn btn-primary" data-run="${i}">Run again today</button>
+      <span class="status" id="s-${i}"></span>
+    </div>
+    <details>
+      <summary>ℹ prompt</summary>
+      <pre id="p-${i}"></pre>
+    </details>
+  </article>
+`).join('');
+
+BRIEFINGS.forEach((b, i) => {
+  const prompt = buildPrompt(b.topic, 'last 24 hours');
+  document.getElementById(`p-${i}`).textContent = prompt;
+  document.querySelector(`[data-run="${i}"]`).onclick = () => sendPrompt(prompt, document.getElementById(`s-${i}`));
+});
+
+const newTopic = document.getElementById('newTopic');
+const windowSel = document.getElementById('windowSel');
+const newPreview = document.getElementById('newPromptPreview');
+function refreshNewPreview(){
+  const topic = (newTopic.value || '[INSERT TOPIC HERE]').trim();
+  newPreview.textContent = buildPrompt(topic, windowSel.value);
+}
+newTopic.addEventListener('input', refreshNewPreview);
+windowSel.addEventListener('change', refreshNewPreview);
+refreshNewPreview();
+
+document.getElementById('runNew').onclick = async () => {
+  const topic = (newTopic.value || '').trim();
+  if (!topic) { document.getElementById('newStatus').textContent = 'add a topic first'; return; }
+  const prompt = buildPrompt(topic, windowSel.value);
+  await sendPrompt(prompt, document.getElementById('newStatus'));
+};
+</script>
+</body>
+</html>
